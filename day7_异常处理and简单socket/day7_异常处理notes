@@ -1,0 +1,20 @@
+/********** 异常处理 **********/
+
+try:
+    code
+except (Error1,Error2) as E:
+    print(E)
+
+except Exception :      处理所有错误类型，但是是哪种错误类型只能自己揣测，一般不用
+相当于处理到最后的else:
+
+else:
+	print( "一切正常的情况下执行这一条！")
+finally:
+	print( "不管有没有错都会执行")
+
+无法抓住的一些错误：
+    语法错误：       IndentationError: unexpected indent
+    eg:(缩进错误)
+        a = 1
+         b= 2
