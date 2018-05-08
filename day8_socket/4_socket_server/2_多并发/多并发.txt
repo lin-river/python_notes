@@ -1,0 +1,5 @@
+1_基础的socketserver并不能支持多线程，要想让"1_基础"支持多线程只需要改一个地方
+在实例的时候将：
+	server = socketserver.TCPServer((HOST, PORT), MyTCPHandler)、
+改为：
+	server = socketserver.ThreadingTCPServer((HOST, PORT), MyTCPHandler)

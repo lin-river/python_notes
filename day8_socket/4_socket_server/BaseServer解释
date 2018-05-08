@@ -1,0 +1,101 @@
+class socketserver.BaseServer(server_address, RequestHandlerClass)
+This is the superclass of all Server objects in the module. It defines the interface, given below, but does not implement most of the methods, which is done in subclasses. The two parameters are stored in the respective server_address and RequestHandlerClass attributes.
+
+fileno()                    # 返回文件句柄
+Return an integer file descriptor for the socket on which the server is listening. This function is most commonly passed to selectors, to allow monitoring multiple servers in the same process.
+返回服务器正在侦听的套接字的整数文件描述符。此功能通常传递给选择器，以允许在同一进程中监控多台服务器。
+
+handle_request()            # 处理单个请求
+Process a single request. This function calls the following methods in order: get_request(), verify_request(), and process_request(). If the user-provided handle() method of the handler class raises an exception, the server’s handle_error() method will be called. If no request is received within timeout seconds, handle_timeout() will be called and handle_request() will return.
+处理单个请求。该函数按顺序调用以下方法：get_request（），verify_request（）和process_request（）。如果处理程序类的用户提供的handle（）方法引发异常，则将调用服务器的handle_error（）方法。如果在超时秒内没有收到请求，则会调用handle_timeout（），并返回handle_request（）。
+
+serve_forever(poll_interval=0.5)            # 每0.5秒检测一下，是否发送了让我shutdown()的信号
+Handle requests until an explicit(明确的) shutdown() request. Poll(检查) for shutdown every poll_interval seconds. Ignores the timeout attribute. It also calls service_actions(), which may be used by a subclass or mixin to provide actions specific to a given service. For example, the ForkingMixIn class uses service_actions() to clean up zombie(僵尸) child processes.
+处理请求直到显式关闭（）请求。轮询每个poll_interval秒关闭。忽略超时属性。它还调用service_actions（），可以由子类或mixin使用它来提供特定于给定服务的操作。例如，ForkingMixIn类使用service_actions（）来清理僵尸子进程。
+
+Changed in version 3.3: Added service_actions call to the serve_forever method.
+在版本3.3中进行了更改：向serve_forever方法添加了service_actions调用。
+
+
+service_actions()
+This is called in the serve_forever() loop. This method can be overridden by subclasses or mixin classes to perform actions specific to a given service, such as cleanup actions.
+
+New in version 3.3.
+
+shutdown()
+Tell the serve_forever() loop to stop and wait until it does.
+告诉serve_forever（）循环停止并等待，直到它结束。
+
+server_close()
+Clean up the server. May be overridden.
+清理服务器。可能会被覆盖。
+
+address_family      # 地址簇
+The family of protocols to which the server’s socket belongs. Common examples are socket.AF_INET and socket.AF_UNIX.
+服务器发送的协议族。常见的例子是socket.AF_INET和socket.AF_UNIX。
+
+RequestHandlerClass
+The user-provided request handler class; an instance of this class is created for each request.
+用户提供的请求处理程序类;将为每个请求创建此类的一个实例。
+
+server_address
+The address on which the server is listening. The format of addresses varies depending on the protocol family; see the documentation for the socket module for details. For Internet protocols, this is a tuple containing a string giving the address, and an integer port number: ('127.0.0.1', 80), for example.
+服务器正在侦听的地址。地址的格式取决于协议族;有关详细信息，请参阅套接字模块的文档。对于Internet协议，这是一个元组，其中包含一个给出地址的字符串和一个整数端口号：（'127.0.0.1'，80）。
+
+socket
+The socket object on which the server will listen for incoming requests.
+服务器将侦听传入请求的套接字对象。
+
+The server classes support the following class variables:
+服务器类支持以下类变量：
+
+allow_reuse_address
+Whether the server will allow the reuse of an address. This defaults to False, and can be set in subclasses to change the policy.
+服务器是否允许重用地址。默认为False，可以在子类中设置以更改策略。
+
+request_queue_size
+The size of the request queue. If it takes a long time to process a single request, any requests that arrive while the server is busy are placed into a queue, up to request_queue_size requests. Once the queue is full, further requests from clients will get a “Connection denied” error. The default value is usually 5, but this can be overridden by subclasses.
+请求队列的大小。如果处理单个请求需要很长时间，则在服务器繁忙时到达的任何请求都将放入一个队列中，最多为request_queue_size请求。一旦队列满了，来自客户端的进一步请求将获得“连接被拒绝”错误。默认值通常是5，但这可以由子类覆盖。
+
+socket_type
+The type of socket used by the server; socket.SOCK_STREAM and socket.SOCK_DGRAM are two common values.
+服务器使用的套接字的类型; socket.SOCK_STREAM和socket.SOCK_DGRAM是两个常见值。
+
+timeout
+Timeout duration, measured in seconds, or None if no timeout is desired. If handle_request() receives no incoming requests within the timeout period, the handle_timeout() method is called.
+超时持续时间（以秒为单位），或者如果不需要超时，则为无。如果handle_request（）在超时期限内未收到传入请求，则会调用handle_timeout（）方法。
+
+There are various server methods that can be overridden by subclasses of base server classes like TCPServer; these methods aren’t useful to external users of the server object.
+有各种服务器方法可以被基类服务器类的子类覆盖，例如TCPServer;这些方法对服务器对象的外部用户无用。
+
+finish_request()
+Actually processes the request by instantiating RequestHandlerClass and calling its handle() method.
+实际上通过实例化RequestHandlerClass并调用其handle（）方法来处理请求。
+
+get_request()
+Must accept a request from the socket, and return a 2-tuple containing the new socket object to be used to communicate with the client, and the client’s address.
+必须接受来自套接字的请求，并返回包含要用于与客户端通信的新套接字对象的2元组以及客户端的地址。
+
+handle_error(request, client_address)
+This function is called if the handle() method of a RequestHandlerClass instance raises an exception. The default action is to print the traceback to standard output and continue handling further requests.
+如果RequestHandlerClass实例的handle（）方法引发异常，则调用此函数。默认操作是将追溯打印到标准输出并继续操作其他请求。
+
+handle_timeout()
+This function is called when the timeout attribute has been set to a value other than None and the timeout period has passed with no requests being received. The default action for forking servers is to collect the status of any child processes that have exited, while in threading servers this method does nothing.
+当timeout属性设置为None以外的值时会调用该函数，并且超时期限已过，且没有收到请求。派生服务器的默认动作是收集退出的任何子进程的状态，而在线程服务器中，此方法什么也不做。
+
+process_request(request, client_address)
+Calls finish_request() to create an instance of the RequestHandlerClass. If desired, this function can create a new process or thread to handle the request; the ForkingMixIn and ThreadingMixIn classes do this.
+调用finish_request（）来创建RequestHandlerClass的一个实例。如果，这个函数可以创建一个新的进程或线程来处理请求; ForkingMixIn和ThreadingMixIn类都是这样做的。
+
+server_activate()
+Called by the server’s constructor to activate the server. The default behavior for a TCP server just invokes listen() on the server’s socket. May be overridden.
+由服务器的构造函数调用以激活服务器。 TCP服务器的默认行为只是在服务器的套接字上调用listen（）。可能会被覆盖。
+
+server_bind()
+Called by the server’s constructor to bind the socket to the desired address. May be overridden.
+由服务器的构造函数调用以将套接字绑定到所需的地址。可能会被覆盖。
+
+verify_request(request, client_address)
+Must return a Boolean value; if the value is True, the request will be processed, and if it’s False, the request will be denied. This function can be overridden to implement access controls for a server. The default implementation always returns True.
+必须返回一个布尔值; 如果值为True，则会处理该请求，如果该值为False，则该请求将被拒绝。 该功能可以被覆盖以实现服务器的访问控制。 默认实现总是返回True。

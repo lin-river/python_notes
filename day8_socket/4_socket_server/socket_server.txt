@@ -1,0 +1,40 @@
+socket_server:  对socket的再次封装
+    最主要的作用：并发处理
+
+socketserver一共有这么几种类型
+常用：
+class socketserver.TCPServer(server_address, RequestHandlerClass, bind_and_activate=True)
+This uses the Internet TCP protocol, which provides for continuous streams of data between the client and server.
+
+class socketserver.UDPServer(server_address, RequestHandlerClass, bind_and_activate=True)
+This uses datagrams, which are discrete packets of information that may arrive out of order or be lost while in transit. The parameters are the same as for TCPServer.
+
+不常用：
+class socketserver.UnixStreamServer(server_address, RequestHandlerClass, bind_and_activate=True)
+class socketserver.UnixDatagramServer(server_address, RequestHandlerClass,bind_and_activate=True)
+These more infrequently used classes are similar to the TCP and UDP classes, but use Unix domain sockets; they’re not available on non-Unix platforms. The parameters are the same as for TCPServer.
+
+继承关系：
++------------+
+| BaseServer |
++------------+
+      |
+      v
++-----------+        +------------------+
+| TCPServer |------->| UnixStreamServer |
++-----------+        +------------------+
+      |
+      v
++-----------+        +--------------------+
+| UDPServer |------->| UnixDatagramServer |
++-----------+        +--------------------+
+
+创建一个socketserver 至少分以下几步:
+First, you must create a (request handler class 处理请求类) by subclassing(子类) the BaseRequestHandlerclass and overriding(覆盖) its handle() method; this method will process incoming requests. 　　
+1.你必须要创建一个请求处理类，并且这个类要继承BaseRequestHandler，并且还要重写handle()
+Second, you must instantiate(实例化) one of the server classes, passing(传递) it the server’s address and the request handler class.
+2.你必须实例化server = TCPServer(举例)，并且传递server IP 和你上面创建的请求处理类给这个TCPServer
+Then call the handle_request() orserve_forever() method of the server object to process one or many requests.
+然后server.handle_request()           # 只处理一个请求
+然后server.handle_forever()           # 处理多个请求，永远执行
+Finally, call server_close() to close the socket.

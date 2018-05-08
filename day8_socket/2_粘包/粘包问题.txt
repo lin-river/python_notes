@@ -1,0 +1,39 @@
+1_Bigdata_socket下的两个文件在linux下运行会报错，因为linux会把以下两个数据包当作2一个数据包发送，于是接收端无法识别故报错（windows一般不会，python2.x一定会）
+		conn.send( str( res_byte_size ).encode() )
+		conn.send( res.encode("utf-8") )
+
+报错信息：
+        Traceback (most recent call last):
+          File "client.py", line 26, in <module>
+            while int( cmd_res_size ) > received_size:
+        ValueError: invalid literal for int() with base 10: b'20client.py\nserver.py\n'
+
+
+粗略(糊弄)解决方法：
+		conn.send( str( res_byte_size ).encode() )
+		sleep(0.5)                       # 让缓冲区超时刷新，0.25有的时候还是会粘包
+		conn.send( res.encode("utf-8") )
+
+小数据解决方法：
+服务端：
+		conn.send( str( res_byte_size ).encode() )
+        conn.recv(1024)                  # 将缓冲区留给接受，即强制刷新缓冲区
+		conn.send( res.encode("utf-8") )
+客户端：
+        conn.send()
+
+大文件解决方法：
+while int( cmd_res_size ) > received_size:
+
+		if int( cmd_res_size ) - received_size > 1024:
+			size = 1024
+		else:
+			size = int( cmd_res_size ) - received_size
+
+
+		data = client.recv(size)
+		received_size += len(data)
+		received_data += data
+	else:
+		print("The data receive done,and the data size is {0} KB...".format(received_size))
+		print( received_data.decode() )
