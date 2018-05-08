@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<lin_data>
+    <PersonInfo enrolled="yes">
+        <name checked="no">Lin</name>
+        <age checked="no">18</age>
+        <sex>man</sex></PersonInfo>
+    <PersonInfo enrolled="no">
+        <name checked="no">He</name>
+        <age checked="no">16</age>
+        <sex>woman</sex></PersonInfo>
+</lin_data>
