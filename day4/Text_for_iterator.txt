@@ -1,0 +1,6 @@
+#文件操作中的for line in f:   其实就是一个迭代器
+#若通过f.readline(),那将会把文件内所有内容提取到内存生成一个列表
+#for line in f:print(line)      #每一次print()就是去迭代一次
+#在python3.X中已经看不出迭代器的痕迹了
+#而在python2.X上f有一个next()方法，但默认不能直接调用
+#   必须通过for line in f.xreadline():才能使用并且只能使用next()方法，readline()已经没用了
